@@ -1,0 +1,8 @@
+__pycache__
+venv
+.env
+archive
+state.json
+*.sqlite
+*.json
+*.csv
