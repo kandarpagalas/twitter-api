@@ -6,8 +6,9 @@ services:
       - 8000:8000
     environment:
       - DISPLAY=:0
-      - TWITTER_EMAIL = ${TWITTER_USER}
-      - TWITTER_USER = ${TWITTER_USER}
-      - TWITTER_PASSWORD = ${TWITTER_PASSWORD}
+      - TWITTER_EMAIL=${TWITTER_USER}
+      - TWITTER_USER=${TWITTER_USER}
+      - TWITTER_PASSWORD=${TWITTER_PASSWORD}
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
+    command: ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
