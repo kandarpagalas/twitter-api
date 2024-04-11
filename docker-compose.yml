@@ -1,13 +1,12 @@
 services:
   api:
-    platform: linux/amd64
+    # platform: linux/amd64
     build: .
     container_name: twitter-api
     ports:
       - 8000:8000
     environment:
-      - DISPLAY=:99.0
-      - DISPLAY_NUM=99
+      - DISPLAY=:99
       - TWITTER_EMAIL=${TWITTER_USER}
       - TWITTER_USER=${TWITTER_USER}
       - TWITTER_PASSWORD=${TWITTER_PASSWORD}

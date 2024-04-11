@@ -10,7 +10,7 @@ from src.etl.direct_search.extract import TweetsExtractor
 
 
 class DirectSearchCrawler:
-    def __init__(self, email, user, password, session=".session/state.json") -> None:
+    def __init__(self, email, user, password, session="src/.session/state.json") -> None:
         self.email = email
         self.user = user
         self.password = password
