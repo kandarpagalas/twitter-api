@@ -2,7 +2,7 @@
 FROM python:3.12
 
 RUN pip install pytest-playwright
-RUN playwright install
+RUN playwright install --with-deps
 
 # 
 WORKDIR /code

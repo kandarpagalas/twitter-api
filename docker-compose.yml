@@ -18,5 +18,5 @@ services:
     # command: 'xvfb-run --server-args="-screen 0 1900x1200x24" python3 src/api.py'
     # command: ["python3", "src/api.py"]
     # command: ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
-    command: ["xvfb-run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    command: ["xvfb-run", "--auto-servernum", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
     # tty: true
