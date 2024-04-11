@@ -32,11 +32,11 @@ Crie um arquivo de autenticação em `src/.session/` usando `autenticate.py`
 ```bash
     uvicorn src.main:app --host 0.0.0.0 --port 8000
 ```
-* A api será acessível em `http://0.0.0.0:8000`
+* Você pode especificar a porta aoterando `8000`
 
 ## API
-endpoint: `http://0.0.0.0:8000`
-documentação: `http://0.0.0.0:8001/docs`
+endpoint: [`http://0.0.0.0:8000`](http://0.0.0.0:8000)
+documentação: [`http://0.0.0.0:8000/docs`](http://0.0.0.0:8000/docs)
 
 ## Deploy
 #### headless
@@ -47,7 +47,6 @@ Para rodar em maquinas sem saída de vídeo, como o `ubuntu-server`, é necessá
 #### docker
 Ainda não consegui viabilizar a criação de um container.
 
-## Uso
 
 ## License
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
