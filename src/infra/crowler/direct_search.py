@@ -1,7 +1,7 @@
 import os
 import json
 from time import sleep
-from random import randint
+from random import shuffle
 import pandas as pd
 
 from playwright.sync_api import sync_playwright
@@ -10,55 +10,65 @@ from src.etl.direct_search.extract import TweetsExtractor
 
 
 class DirectSearchCrawler:
-    def __init__(self, email, user, password, session="src/.session/state.json") -> None:
-        self.email = email
-        self.user = user
-        self.password = password
+    def __init__(self, session="src/.session/state.json") -> None:
         self.session = session
         self.dataset = []
 
-    def autenticate(self, headless=True):
-        with sync_playwright() as p:
-            twitter_home = "https://twitter.com"
+    def _get_state_instance(self):
+        files = os.listdir("src/.session/")
 
-            # Abre navegador
-            browser = p.chromium.launch(headless=headless)
+        states = list(filter(lambda x: ".json" in x, files))
 
-            # Abre aba anônima
-            if os.path.isfile(self.session):
-                # Create a new context with the saved storage state.
-                context = browser.new_context(storage_state=self.session)
-                page = context.new_page()
-                page.goto(twitter_home, timeout=120000)
+        if len(states) == 0:
+            raise Exception("Não existe state para ser usado")
 
-            else:
-                context = browser.new_context()
-                page = context.new_page()
+        shuffle(states)
 
-                # Navega até a página
-                page.goto(twitter_home, timeout=60000)
+        return "src/.session/" + states.pop()
 
-                page.locator("xpath=//a[@href='/login']").click()
-                sleep(3)
+    # def autenticate(self, headless=True):
+    #     with sync_playwright() as p:
+    #         twitter_home = "https://twitter.com"
 
-                page.locator("[name='text']").fill(self.user)
-                sleep(1)
-                page.get_by_text("Next").click()
-                sleep(5)
+    #         # Abre navegador
+    #         browser = p.chromium.launch(headless=headless)
 
-                ## Adicionar etapa nome de usuário
+    #         # Abre aba anônima
+    #         if os.path.isfile(self.session):
+    #             # Create a new context with the saved storage state.
+    #             context = browser.new_context(storage_state=self.session)
+    #             page = context.new_page()
+    #             page.goto(twitter_home, timeout=120000)
 
-                page.locator("[name='password']").fill(self.password)
-                sleep(1)
-                page.get_by_text("Log in").click()
-                sleep(3)
+    #         else:
+    #             context = browser.new_context()
+    #             page = context.new_page()
 
-                # Save storage state into the file.
-                context.storage_state(path=self.session)
+    #             # Navega até a página
+    #             page.goto(twitter_home, timeout=60000)
 
-    def search(self, subject, pages=5, headless=True):
-        if not os.path.isfile(self.session):
-            self.autenticate()
+    #             page.locator("xpath=//a[@href='/login']").click()
+    #             sleep(3)
+
+    #             page.locator("[name='text']").fill(self.user)
+    #             sleep(1)
+    #             page.get_by_text("Next").click()
+    #             sleep(5)
+
+    #             ## Adicionar etapa nome de usuário
+
+    #             page.locator("[name='password']").fill(self.password)
+    #             sleep(1)
+    #             page.get_by_text("Log in").click()
+    #             sleep(3)
+
+    #             # Save storage state into the file.
+    #             context.storage_state(path=self.session)
+
+    def search(self, subject, pages=5, headless=False):
+        state = self._get_state_instance()
+        # if not os.path.isfile(self.session):
+        #     self.autenticate()
 
         def handle_response_page(response):
             if "SearchTimeline" in response.url:
@@ -75,7 +85,7 @@ class DirectSearchCrawler:
                 except Exception as e:
                     print(e)
 
-        def page_scroll(page, repeat=5, interval=3):
+        def page_scroll(page, repeat=5, interval=2):
             # page.mouse.wheel(horizontally, vertically(positive is
             # scrolling down, negative is scrolling up)
             for _ in range(repeat):  # make the range as long as needed
@@ -86,9 +96,9 @@ class DirectSearchCrawler:
             twitter_home = "https://twitter.com"
 
             # Abre navegador
-            browser = p.chromium.launch(headless=headless)
+            browser = p.chromium.launch(headless=False)
             # Create a new context with the saved storage state.
-            context = browser.new_context(storage_state=self.session)
+            context = browser.new_context(storage_state=state)
             # Abre aba anônima
             page = context.new_page()
             # Navega até a página inicial
@@ -103,10 +113,12 @@ class DirectSearchCrawler:
 
             page_scroll(page, repeat=pages)
 
-            sleep(5)
+            sleep(3)
             page.close()
             context.close()
             browser.close()
+
+        return self.dataset
 
     def to_pandas(self):
         return pd.DataFrame(self.dataset)

@@ -25,7 +25,7 @@ Siga os passos aseguir para rodar este projeto em um ambiente virtual.
 ### Autenticação
 Crie um arquivo de autenticação em `src/.session/` usando `autenticate.py`
 ```bash
-    python python src/autenticate.py
+    python src/autenticate.py
 ```
 
 ### Iniciar

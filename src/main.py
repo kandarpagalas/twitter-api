@@ -2,10 +2,11 @@ import os
 from typing import Union
 from dotenv import load_dotenv
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 from src.infra.config.start_db import create_tables
 from src.infra.crowler.direct_search import DirectSearchCrawler
+from src.infra.crowler.authenticator import TwitterAuthenticator
 
 app = FastAPI()
 
@@ -27,18 +28,29 @@ def search_subject(subject: str):
         os.remove(sqlite_file)
     create_tables()
 
-    # if not os.path.isfile("development.sqlite"):
-    #     create_tables()
-    #     print("Criando tabelas no banco de dados")
+    dsc = DirectSearchCrawler()
+    try:
+        return dsc.search(subject, pages=3, headless=False)
+    except:
+        raise HTTPException(status_code=403, detail="Arquivo de autenticação ausente")
 
-    load_dotenv()
-    email = os.environ["TWITTER_USER"]
-    user = os.environ["TWITTER_USER"]
-    password = os.environ["TWITTER_PASSWORD"]
 
-    dsc = DirectSearchCrawler(email, user, password)
-    dsc.search(subject, pages=3, headless=False)
-    # df = dsc.to_pandas()
-    # df.to_csv("tweets_v2.csv")
+from pydantic import BaseModel
 
-    return dsc.get_dataset()
+
+class Credentials(BaseModel):
+    user: str
+    email: str
+    password: str
+
+
+@app.post("/auth/")
+async def create_item(credentials: Credentials):
+    email = credentials.email
+    user = credentials.user
+    password = credentials.password
+
+    session = TwitterAuthenticator(email, user, password)
+    state = session.autenticate(auto=True)
+
+    return state

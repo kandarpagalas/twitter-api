@@ -39,17 +39,13 @@ def search_subject(subject: str):
     #     create_tables()
     #     print("Criando tabelas no banco de dados")
 
-    load_dotenv()
-    email = os.environ["TWITTER_USER"]
-    user = os.environ["TWITTER_USER"]
-    password = os.environ["TWITTER_PASSWORD"]
+    # load_dotenv()
+    # email = os.environ["TWITTER_USER"]
+    # user = os.environ["TWITTER_USER"]
+    # password = os.environ["TWITTER_PASSWORD"]
 
-    dsc = DirectSearchCrawler(email, user, password)
-    dsc.search(subject, pages=3, headless=False)
-    # df = dsc.to_pandas()
-    # df.to_csv("tweets_v2.csv")
-
-    return dsc.get_dataset()
+    dsc = DirectSearchCrawler()
+    return dsc.search(subject, pages=3, headless=False)
 
 
 if __name__ == "__main__":
